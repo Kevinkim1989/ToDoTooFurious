@@ -10,26 +10,24 @@ const TaskList = () => {
   // Define a function to load the tasks from local storage
   const loadTasks = () => {
     // Get the tasks from local storage
-    const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
-
+    const tasks = JSON.parse(localStorage.getItem('tasks'), ['id', 'title', 'description', 'status']) || [];
+  
     // Update the tasks state
     setTasks(tasks);
   };
 
-  // Use the useEffect hook to load the tasks from local storage
-  // when the component is mounted, and update the tasks state
-  // whenever the local storage or the tasks state variable changes
   useEffect(() => {
     // Load the tasks from local storage
     loadTasks();
-
+  
     // Add an event listener to update the tasks state
     // when the local storage changes
     window.addEventListener('storage', loadTasks);
-
+  
     // Clean up the event listener when the component unmounts
     return () => window.removeEventListener('storage', loadTasks);
-  }, [tasks]);
+  }, []); // Remove the tasks state variable from the dependency array
+  
 
   // Define a new function to handle deleting tasks
   const handleDelete = id => {

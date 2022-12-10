@@ -7,6 +7,53 @@ const TaskItem = ({ task, handleDelete }) => {
   // and the state updater functions for the input fields
   const [editTitle, setEditTitle] = useState(task.title);
   const [editDescription, setEditDescription] = useState(task.description);
+  // const [editStatus, setEditStatus] = useState(task.status);
+  const [editStatus, setEditStatus] = useState('');
+
+
+  const TaskForm = ({ task, handleSave, handleCancel }) => (
+    <Form>
+      <Form.Group>
+        <Form.Label htmlFor="editTitle">Title:</Form.Label>
+        <Form.Control
+          id="editTitle"
+          type="text"
+          value={editTitle}
+          onChange={event => setEditTitle(event.target.value)}
+        />
+      </Form.Group>
+
+      <Form.Group>
+        <Form.Label htmlFor="editDescription">Description:</Form.Label>
+        <Form.Control
+          id="editDescription"
+          as="textarea"
+          value={editDescription}
+          onChange={event => setEditDescription(event.target.value)}
+        />
+      </Form.Group>
+
+      <Form.Group>
+        <Form.Label htmlFor="editStatus">Status:</Form.Label>
+        <Form.Select
+          id="editStatus"
+          value={editStatus}
+          onChange={event => setEditStatus(event.target.value)}
+        >
+          <option value="in progress">In progress</option>
+          <option value="completed">Completed</option>
+          <option value="cancelled">Cancelled</option>
+        </Form.Select>
+      </Form.Group>
+
+      <Button variant="primary" onClick={handleSave}>
+        Save
+      </Button>
+      <Button variant="secondary" onClick={handleCancel}>
+        Cancel
+      </Button>
+    </Form>    
+  );
 
   // Declare a state variable to track whether the task is being edited
   const [isEditing, setIsEditing] = useState(false);
@@ -25,7 +72,9 @@ const TaskItem = ({ task, handleDelete }) => {
     setIsEditing(false);
     setEditTitle(task.title);
     setEditDescription(task.description);
+    setEditStatus('');
   };
+  
 
   // Define an event handler for the Save button
   const handleSave = () => {
@@ -38,7 +87,8 @@ const TaskItem = ({ task, handleDelete }) => {
     const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
 
     // Update the task in the tasks array with the edited values
-    const updatedTask = { ...task, title: editTitle, description: editDescription };
+    // const updatedTask = { ...task, title: editTitle, description: editDescription };
+    const updatedTask = { ...task, title: editTitle, description: editDescription, status: editStatus };
     const updatedTasks = tasks.map(t => (t.id === task.id ? updatedTask : t));
 
     // Save the tasks array to local storage
@@ -56,37 +106,13 @@ const TaskItem = ({ task, handleDelete }) => {
       based on the isEditing state variable */}
       {isEditing ? (
         // If isEditing is true, render the input fields
-        <Form>
-          <Form.Group>
-            <Form.Label htmlFor="editTitle">Title:</Form.Label>
-            <Form.Control
-              id="editTitle"
-              type="text"
-              value={editTitle}
-              onChange={event => setEditTitle(event.target.value)}
-            />
-          </Form.Group>
-          <Form.Group>
-            <Form.Label htmlFor="editDescription">Description:</Form.Label>
-            <Form.Control
-              id="editDescription"
-              as="textarea"
-              value={editDescription}
-              onChange={event => setEditDescription(event.target.value)}
-            />
-          </Form.Group>
-          <Button variant="primary" onClick={handleSave}>
-            Save
-          </Button>
-          <Button variant="secondary" onClick={handleCancel}>
-            Cancel
-          </Button>
-        </Form>
+        <TaskForm handleSave={handleSave} handleCancel={handleCancel} />
       ) : (
         // If isEditing is false, render the task title and description
         <>
           <h4>{task.title}</h4>
           <p>{task.description}</p>
+          <p>Status: {task.status}</p>
           <Button variant="primary" onClick={handleEdit}>
             Edit
           </Button>
